@@ -11,7 +11,7 @@ define(function(require, exports, module) {
   function footerInit() {
     // modal mode
     $('.am-footer-ysp').on('click', function() {
-      $('#am-footer-mode').modal();
+      $('#am-footer-modal').modal();
     });
 
     !window.AMUI_NO_ADD2HS && addToHS();

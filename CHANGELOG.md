@@ -1,6 +1,12 @@
 # Amaze UI 1.x Change Log
 ---
 
+### 2014.12 W2
+
+**Web 组件：**
+
+- `CHANGED` Footer 移除`云适配驱动`；
+
 ### 2014.12 W1
 
 **CSS**:
