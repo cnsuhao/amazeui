@@ -6,6 +6,7 @@
 **Web 组件：**
 
 - `CHANGED` Footer 移除`云适配驱动`；
+- `IMPROVED` 处理 Gotop `fixed` 样式与 Navbar 共存问题。
 
 ### 2014.12 W1
 
