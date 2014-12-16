@@ -14,7 +14,8 @@ define(function(require, exports, module) {
       $('#am-footer-modal').modal();
     });
 
-    !window.AMUI_NO_ADD2HS && addToHS();
+    var options = $.AMUI.utils.parseOptions($('.am-footer').data('amFooter'));
+    options.addToHS && addToHS();
 
     // switch mode
     // switch to desktop

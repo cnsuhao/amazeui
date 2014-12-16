@@ -71,6 +71,7 @@ window.AMUI_NO_ADD2HS = true;
 
   "options": {
      "modal": "",
+     "addToHS": false,
      "techSupprtCo": "",
      "techSupprtNet": "",
      "textPosition": ""
