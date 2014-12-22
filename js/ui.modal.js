@@ -83,7 +83,7 @@ define(function(require, exports, module) {
     $element.show().redraw();
 
     !isPopup && $element.css({
-      marginTop: -parseInt($element.height() / 2, 10) + 'px'
+      marginTop: -parseFloat($element.css('height')) / 2 + 'px'
     });
 
     $element.
