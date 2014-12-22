@@ -68,7 +68,7 @@ define(function(require, exports, module) {
     this.active = 1;
 
     $element.off('.offcanvas.amui').
-        on('click.offcanvas.amui swipe.offcanvas.amui', $.proxy(function(e) {
+        on('click.offcanvas.amui', $.proxy(function(e) {
           var $target = $(e.target);
 
           if (!e.type.match(/swipe/)) {
