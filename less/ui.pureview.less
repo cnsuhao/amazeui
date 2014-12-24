@@ -21,14 +21,14 @@
   height: 100%;
   z-index: @z-index-pureview;
   background: rgba(0, 0, 0, 0.95);
-  //display: none;
+  display: none;
   overflow: hidden;
   -webkit-transition-property: -webkit-transform;
   -moz-transition-property: -moz-transform;
   -o-transition-property: -o-transform;
   transition-property: transform;
   .translate3d(0, 100%, 0);
-  .transition-duration(0.4s);
+  .transition-duration(.3s);
 
   &.am-active {
     .translate3d(0, 0, 0);
@@ -133,7 +133,7 @@
     z-index: 200;
     -webkit-user-drag: none;
     user-drag: none;
-    .transition(opacity .15s linear);
+    .transition(opacity .2s linear);
 
     &.am-img-loaded {
       opacity: 1;

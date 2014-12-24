@@ -1,6 +1,10 @@
 # Amaze UI 1.x Change Log
 ---
 
+### 2014.12 W4
+
+- `IMPROVED` #294 Pureview 插件优化。
+
 ### 2014.12 W3
 
 **JS:**

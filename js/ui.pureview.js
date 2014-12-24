@@ -42,8 +42,9 @@ define(function(require, exports, module) {
         '<ol class="am-pureview-nav"></ol>' +
         '<div class="am-pureview-bar am-active">' +
         '<span class="am-pureview-title"></span>' +
-        '<span class="am-pureview-current"></span> / ' +
-        '<span class="am-pureview-total"></span></div>' +
+        '<div class="am-pureview-counter">' +
+        '  <span class="am-pureview-current"></span> / ' +
+        '  <span class="am-pureview-total"></span></div></div>' +
         '<div class="am-pureview-actions am-active">' +
         '<a href="javascript: void(0)" class="am-icon-chevron-left" ' +
         'data-am-close="pureview"></a></div>' +
@@ -81,129 +82,86 @@ define(function(require, exports, module) {
   };
 
   PureView.prototype.init = function() {
-    var me = this;
+    var _this = this;
     var options = this.options;
     var $element = this.$element;
     var $pureview = this.$pureview;
-    var $slider = $pureview.find(options.selector.slider);
-    var $nav = $pureview.find(options.selector.nav);
-    var $slides = $([]);
-    var $navItems = $([]);
-    var $images = $element.find(options.target);
-    var total = $images.length;
-    var imgUrls = [];
 
-    if (!total) {
-      return;
-    }
-
-    if (total === 1) {
-      $pureview.addClass(options.className.onlyOne);
-    }
-
-    $images.each(function(i, item) {
-      var src;
-      var title;
-
-      if (options.target == 'a') {
-        src = item.href; // to absolute path
-        title = item.title || '';
-      } else {
-        src = $(item).data('rel') || item.src; // <img src='' data-rel='' />
-        title = $(item).attr('alt') || '';
-      }
-
-      // hide bar: wechat_webview_type=1
-      // http://tmt.io/wechat/  not working?
-      imgUrls.push(src);
-
-      $slides = $slides.add($('<li><div class="am-pinch-zoom">' +
-          '<img src="' + src + '" alt="' + title + '"/></div></li>'));
-      $navItems = $navItems.add($('<li>' + (i + 1) + '</li>'));
-    });
-
-    $slider.append($slides);
-    $nav.append($navItems);
+    this.refreshSlides();
 
     $('body').append($pureview);
-
-    $pureview.find(options.selector.total).text(total);
 
     this.$title = $pureview.find(options.selector.title);
     this.$current = $pureview.find(options.selector.current);
     this.$bar = $pureview.find(options.selector.bar);
     this.$actions = $pureview.find(options.selector.actions);
-    this.$navItems = $nav.find('li');
-    this.$slides = $slider.find('li');
 
     if (options.shareBtn) {
       this.$actions.append('<a href="javascript: void(0)" ' +
           'class="am-icon-share-square-o" data-am-toggle="share"></a>');
     }
 
-    $slider.find(options.selector.pinchZoom).each(function() {
-      $(this).data('amui.pinchzoom', new PinchZoom($(this), {}));
-      $(this).on('pz_doubletap', function(e) {
-        //
-      });
-    });
-
-    $images.on('click.pureview.amui', function(e) {
+    this.$element.on('click.pureview.amui', options.target, function(e) {
       e.preventDefault();
-      var clicked = $images.index(this);
+      var clicked = _this.$images.index(this);
 
       // Invoke WeChat ImagePreview in WeChat
       // TODO: detect WeChat before init
       if (options.weChatImagePreview && window.WeixinJSBridge) {
         window.WeixinJSBridge.invoke('imagePreview', {
-          current: imgUrls[clicked],
-          urls: imgUrls
+          current: _this.imgUrls[clicked],
+          urls: _this.imgUrls
         });
       } else {
-        me.open(clicked);
+        _this.open(clicked);
       }
     });
 
-    $pureview.find('.am-pureview-direction a').
-        on('click.direction.pureview.amui', function(e) {
-          e.preventDefault();
-          var $clicked = $(e.target).parent('li');
+    $pureview.find('.am-pureview-direction').
+      on('click.direction.pureview.amui', 'li', function(e) {
+        e.preventDefault();
 
-          if ($clicked.is('.am-pureview-prev')) {
-            me.prevSlide();
-          } else {
-            me.nextSlide();
-          }
-        });
+        if ($(this).is('.am-pureview-prev')) {
+          _this.prevSlide();
+        } else {
+          _this.nextSlide();
+        }
+      });
 
     // Nav Contorl
-    this.$navItems.on('click.nav.pureview.amui', function() {
-      var index = me.$navItems.index($(this));
-      me.activate(me.$slides.eq(index));
-    });
+    $pureview.find(options.selector.nav).on('click.nav.pureview.amui', 'li',
+      function() {
+        var index = _this.$navItems.index($(this));
+        _this.activate(_this.$slides.eq(index));
+      });
 
     // Close Icon
     $pureview.find(options.selector.close).
         on('click.close.pureview.amui', function(e) {
           e.preventDefault();
-          me.close();
+          _this.close();
         });
 
-    $slider.hammer().on('press.pureview.amui', function(e) {
+    this.$slider.hammer().on('press.pureview.amui', function(e) {
       e.preventDefault();
-      me.toggleToolBar();
+      _this.toggleToolBar();
     }).on('swipeleft.pureview.amui', function(e) {
       e.preventDefault();
-      me.nextSlide();
+      _this.nextSlide();
     }).on('swiperight.pureview.amui', function(e) {
       e.preventDefault();
-      me.prevSlide();
+      _this.prevSlide();
     });
 
-    $slider.data('hammer').get('swipe').set({
+    this.$slider.data('hammer').get('swipe').set({
       direction: Hammer.DIRECTION_HORIZONTAL,
       velocity: 0.35
     });
+
+    // NOTE:
+    // trigger `changed.dom.amui` manually
+    //   when new images appended, or call refreshSlides()
+    $element.on('changed:dom:amui', $.proxy(this.refreshSlides, _this));
 
     $(document).on('keydown.pureview.amui', $.proxy(function(e) {
       var keyCode = e.keyCode;
@@ -217,16 +175,87 @@ define(function(require, exports, module) {
     }, this));
   };
 
+  PureView.prototype.refreshSlides = function() {
+    // update images collections
+    this.$images = this.$element.find(this.options.target);
+    var _this = this;
+    var options = this.options;
+    var $pureview = this.$pureview;
+    var $slides = $([]);
+    var $navItems = $([]);
+    var $images = this.$images;
+    var total = $images.length;
+    this.$slider = $pureview.find(options.selector.slider);
+    this.$nav = $pureview.find(options.selector.nav);
+    this.imgUrls = []; // for WeChat Image Preview
+    var viewedFlag = 'data-am-pureviewed';
+
+    if (!total) {
+      return;
+    }
+
+    if (total === 1) {
+      $pureview.addClass(options.className.onlyOne);
+    }
+
+    $images.not('[' + viewedFlag + ']').each(function(i, item) {
+      var src;
+      var title;
+
+      // get image URI from link's href attribute
+      if (item.nodeName === 'A') {
+        src = item.href; // to absolute path
+        title = item.title || '';
+      } else {
+        src = $(item).data('rel') || item.src; // <img src='' data-rel='' />
+        title = $(item).attr('alt') || '';
+      }
+
+      // add pureviewed flag
+      item.setAttribute(viewedFlag, '1');
+
+      // hide bar: wechat_webview_type=1
+      // http://tmt.io/wechat/  not working?
+      _this.imgUrls.push(src);
+
+      $slides = $slides.add($('<li data-src="' + src + '" data-title="' + title +
+      '"></li>'));
+      $navItems = $navItems.add($('<li>' + (i + 1) + '</li>'));
+    });
+
+    $pureview.find(options.selector.total).text(total);
+
+    this.$slider.append($slides);
+    this.$nav.append($navItems);
+    this.$navItems = this.$nav.find('li');
+    this.$slides = this.$slider.find('li');
+  };
+
+  PureView.prototype.loadImage = function($slide, callback) {
+    var appendedFlag = 'image-appended';
+
+    if (!$slide.data(appendedFlag)) {
+      var $img = $('<img>', {
+        src: $slide.data('src'),
+        alt: $slide.data('title')
+      });
+
+      $slide.html($img).wrapInner('<div class="am-pinch-zoom"></div>').redraw();
+
+      var $pinchWrapper = $slide.find(this.options.selector.pinchZoom);
+      $pinchWrapper.data('amui.pinchzoom', new PinchZoom($pinchWrapper[0], {}));
+      $slide.data('image-appended', true);
+    }
+
+    callback && callback.call(this);
+  };
+
   PureView.prototype.activate = function($slide) {
     var options = this.options;
     var $slides = this.$slides;
     var activeIndex = $slides.index($slide);
     var alt = $slide.find('img').attr('alt') || '';
     var active = options.className.active;
-
-    UI.utils.imageLoader($slide.find('img'), function(image) {
-      $(image).addClass('am-img-loaded');
-    });
 
     if ($slides.find('.' + active).is($slide)) {
       return;
@@ -235,6 +264,12 @@ define(function(require, exports, module) {
     if (this.transitioning) {
       return;
     }
+
+    this.loadImage($slide, function() {
+      UI.utils.imageLoader($slide.find('img'), function(image) {
+        $(image).addClass('am-img-loaded');
+      });
+    });
 
     this.transitioning = 1;
 
@@ -301,6 +336,7 @@ define(function(require, exports, module) {
 
   PureView.prototype.open = function(index) {
     var active = index || 0;
+    this.$pureview.show().redraw();
     this.checkScrollbar();
     this.setScrollbar();
     this.activate(this.$slides.eq(active));
@@ -315,12 +351,14 @@ define(function(require, exports, module) {
     this.$slides.removeClass();
 
     function resetBody() {
+      this.$pureview.hide();
       this.$body.removeClass(options.className.activeBody);
       this.resetScrollbar();
     }
 
     if (transition) {
-      this.$pureview.one(transition.end, $.proxy(resetBody, this));
+      this.$pureview.one(transition.end, $.proxy(resetBody, this)).
+        emulateTransitionEnd(300);
     } else {
       resetBody.call(this);
     }

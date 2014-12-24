@@ -7,10 +7,10 @@
 ## 使用演示
 
 ### 从链接中获取图片
-    
+
 `````html
 <ul data-am-widget="gallery" class="am-gallery sm-block-grid-2
-  md-block-grid-3 lg-block-grid-4 am-gallery-default" data-am-pureview="{target: 'a'}">
+  md-block-grid-3 lg-block-grid-4 am-gallery-default" data-am-pureview="{target: 'a'}" id="doc-pv-gallery">
   <li>
     <div class="am-gallery-item">
       <a href="http://amui.qiniudn.com/pure-1.jpg" title="远方 有一个地方 那里种有我们的梦想">
@@ -53,6 +53,26 @@
   </li>
 </ul>
 `````
+
+`````html
+<button class="am-btn am-btn-primary" id="doc-pv-append">随机插入一个图片</button>
+`````
+
+<script>
+  $(function() {
+    var $gallery = $('#doc-pv-gallery');
+    var $items = $gallery.find('li');
+
+    $('#doc-pv-append').on('click', function() {
+      var random = Math.round(Math.random() * 3);
+      var $clone = $items.eq(random).clone();
+      $clone.find('a').removeAttr('data-am-pureviewed');
+      $clone.appendTo($gallery);
+
+      $gallery.trigger('changed:dom:amui');
+    });
+  });
+</script>
 
 ### 从 `data-rel` 中获取图片
 
