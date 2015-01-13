@@ -1,6 +1,8 @@
 # Amaze UI 1.x Change Log
 ---
 
+## Amaze UI v1.0.2 (2015.01.13)
+
 ### 2014.01 W2
 
 - `FIXED` PureView 第一次浏览时标题不显示问题。
@@ -62,7 +64,6 @@ __CSS__：
 __Web 组件__：
 
 - `FIXED` #155 修复 Accordion 一个页面中多个共存问题。
-
 
 ## Amaze UI v1.0.0-rc1
 
