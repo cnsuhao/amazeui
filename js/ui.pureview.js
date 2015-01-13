@@ -254,7 +254,7 @@ define(function(require, exports, module) {
     var options = this.options;
     var $slides = this.$slides;
     var activeIndex = $slides.index($slide);
-    var alt = $slide.find('img').attr('alt') || '';
+    var title = $slide.data('title') || '';
     var active = options.className.active;
 
     if ($slides.find('.' + active).is($slide)) {
@@ -273,7 +273,7 @@ define(function(require, exports, module) {
 
     this.transitioning = 1;
 
-    this.$title.text(alt);
+    this.$title.text(title);
     this.$current.text(activeIndex + 1);
     $slides.removeClass();
     $slide.addClass(active);

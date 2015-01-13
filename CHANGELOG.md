@@ -1,6 +1,10 @@
 # Amaze UI 1.x Change Log
 ---
 
+### 2014.01 W2
+
+- `FIXED` PureView 第一次浏览时标题不显示问题。
+
 ### 2014.12 W4
 
 - `IMPROVED` #294 Pureview 插件优化。

@@ -22,7 +22,7 @@
 // =============================================================================
 
 //@fa-font-path: "../fonts";
-@fa-font-path: '//dn-staticfile.qbox.me/font-awesome/4.2.0/fonts';
+@fa-font-path: 'http://dn-staticfile.qbox.me/font-awesome/4.2.0/fonts';
 @fa-css-prefix: am-icon;
 @fa-version: '4.2.0';
 @fa-border-color: #eee;
@@ -55,10 +55,10 @@
 
 [class*="am-icon-"] {
   display: inline-block;
+  font-family: "FontAwesome", sans-serif;
 
   &:before {
     .am-icon-font;
-    font-family: "FontAwesome" !important;
   }
 }
 
